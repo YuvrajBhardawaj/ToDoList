@@ -5,13 +5,15 @@ function List() {
     const [list,setList]=useState("")
     const [task,setTask]=useState({})
   
-    useEffect(()=>{
+    useEffect(() => {
       axios.get('/api/to_do_list')
-      .then((res)=>{setTask(res.data)
-        //console.log(task)
-    })
-      .catch((err)=>console.log(err))
-    },[list])
+          .then((res) => {
+              if (res.data.success)
+                  setTask(res.data.data);
+              console.log(res);
+          })
+          .catch((err) => console.log(err));
+  }, [list]);
   
     const submitHandler=(e)=>{
       e.preventDefault()

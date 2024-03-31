@@ -1,6 +1,6 @@
 import express from 'express'
 import User from './config.js';
-import { addDoc, deleteDoc, doc, getDoc, setDoc } from 'firebase/firestore';
+import { addDoc, deleteDoc, doc, getDoc, setDoc, updateDoc } from 'firebase/firestore';
 import { SignIn, SignUp } from './auth.js';
 import jwt, { decode } from 'jsonwebtoken'
 import cookieParser from 'cookie-parser';
@@ -14,7 +14,7 @@ app.post('/register', async (req, res) => {
         const result = await SignUp(email, password);
         if (result.success) {
             res.status(result.status).send("User added");
-            await setDoc(doc(User, result.cred), { email });
+            //await setDoc(doc(User, result.cred), { email });
         } else {
             res.status(result.status).send(result.message);
         }
@@ -44,21 +44,41 @@ app.get('/api/to_do_list',async(req,res)=>{
             const userDoc = await getDoc(userDocRef); // Retrieve the document
             if (userDoc.exists()) {
                 console.log(userDoc.data())
-                res.send(userDoc.data()); // Send the data of the user document
-            } else {
-                res.status(404).send('User not found'); // Send a 404 response if the user document does not exist
+                res.send({success:true,data:userDoc.data()}); // Send the data of the user document
+            } 
+            else {
+                res.send({success:false,message:'User not found'}); // Send a 404 response if the user document does not exist
             }
         }
     } catch (error) {
         console.error(error);
-        res.status(500).send('Internal Server Error'); // Send a 500 response for any errors
+        res.status(500).send({success:false,message:'Internal Server Error'}); // Send a 500 response for any errors
     }
 })
 app.post('/api/to_do_list',async(req,res)=>{
     const {list}=req.body
-    console.log(list)
-    // const result=await addItem(list)
-    // res.send(result)
+    const token = req.cookies.jwt //req.cookies.cookie_name
+    try {
+        if(token){
+            const decoded = await jwt.verify(token,"my_secret_key")       
+            const userDocRef = doc(User, decoded.uid); // Get the document reference for the user with the specified UID
+            const userDoc = await getDoc(userDocRef); // Retrieve the document
+            if (userDoc.exists()) {
+                const userData = userDoc.data()
+                const updatedData = {...userData,[(Object.keys(userData).length+1)]:list}
+                await updateDoc(userDocRef, updatedData);
+                res.send({success:true,data:userDoc.data()}); // Send the data of the user document
+            } 
+            else {
+                console.log("I am inside else")
+                await setDoc(doc(User, decoded.uid), { '1' : list})
+                res.send({success:false,message:'User not found'}); // Send a 404 response if the user document does not exist
+            }
+        }
+    } catch (error) {
+        console.error(error);
+        res.status(500).send({success:false,message:'Internal Server Error'}); // Send a 500 response for any errors
+    }
 })
 app.delete('/api/to_do_list/:id',async(req,res)=>{
     const _id=req.params.id
