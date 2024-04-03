@@ -81,9 +81,25 @@ app.post('/api/to_do_list',async(req,res)=>{
     }
 })
 app.delete('/api/to_do_list/:id',async(req,res)=>{
-    const _id=req.params.id
-    const result=await deleteItem(_id)
-    res.send(result)
+    const id=req.params.id
+    const token = req.cookies.jwt
+    console.log(id)
+    try {
+        if(token){
+            const decoded = await jwt.verify(token,"my_secret_key")       
+            const userDocRef = doc(User, decoded.uid)
+            const userDoc = await getDoc(userDocRef)
+            if(userDoc.exists()){
+                const userData = userDoc.data()
+                delete userData[id]
+                await setDoc(userDocRef, userData)
+                res.send(userData)
+            }
+        }
+      } catch (error) {
+        console.error('Error deleting user:', error);
+        res.status(500).json({ error: 'Error deleting user' });
+    }
 })
 app.listen(3000,()=>{
     console.log("Server running at 3000")

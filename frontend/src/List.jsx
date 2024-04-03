@@ -27,9 +27,11 @@ function List() {
         }
     }
     const onDelete=(index)=>{
-      const taskId=task[index]._id
-      axios.delete(`/api/to_do_list/${taskId}`)
-      .then((res)=>console.log(res))
+      axios.delete(`/api/to_do_list/${index}`)
+      .then((res)=>{
+        console.log(res.data)
+        setTask(res.data)
+      })
       .catch((err)=>console.log(err))
     }
     function renderTask() {
