@@ -5,11 +5,11 @@ function SignIn() {
     const [email,setEmail] = useState("")
     const [password,setPassword] = useState("")
     function signIn(e) {
-        
         e.preventDefault();
         if(email.length>0 && password.length>0){
             axios.post('/api/login',{email,password})
             .then((res)=>{
+                console.log(res.data)
                 if(res.data.success){
                     console.log(res.data.message)
                     window.location.href = '/List';

@@ -4,6 +4,7 @@ import { addDoc, deleteDoc, doc, getDoc, setDoc, updateDoc } from 'firebase/fire
 import { SignIn, SignUp } from './auth.js';
 import jwt, { decode } from 'jsonwebtoken'
 import cookieParser from 'cookie-parser';
+import { v4 as uuidv4 } from 'uuid';
 
 const app=express()
 app.use(express.json());
@@ -63,15 +64,16 @@ app.post('/api/to_do_list',async(req,res)=>{
             const decoded = await jwt.verify(token,"my_secret_key")       
             const userDocRef = doc(User, decoded.uid); // Get the document reference for the user with the specified UID
             const userDoc = await getDoc(userDocRef); // Retrieve the document
+            const id = uuidv4()
             if (userDoc.exists()) {
                 const userData = userDoc.data()
-                const updatedData = {...userData,[(Object.keys(userData).length+1)]:list}
+                const updatedData = {...userData,[id]:list}
                 await updateDoc(userDocRef, updatedData);
                 res.send({success:true,data:userDoc.data()}); // Send the data of the user document
             } 
             else {
                 console.log("I am inside else")
-                await setDoc(doc(User, decoded.uid), { '1' : list})
+                await setDoc(doc(User, decoded.uid), { [id] : list})
                 res.send({success:false,message:'User not found'}); // Send a 404 response if the user document does not exist
             }
         }

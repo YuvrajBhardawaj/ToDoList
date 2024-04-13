@@ -1,3 +1,33 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+.home{
+    background-color: black;
+}
+#heading{
+    font-size: 100px;
+    font-weight: 900;
+    text-align: center;
+    background: linear-gradient(to right, rgb(166, 255, 0), blue);
+    color: transparent;
+    -webkit-background-clip: text;
+    text-shadow: 0 0 60px rgba(25, 0, 255, 0.457);
+    animation: anime 1s infinite alternate;
+}
+@keyframes anime{
+    100%{
+        text-shadow: 0 0 60px rgba(69, 3, 100, 0.457);
+    }
+}
+@media (max-width: 767px) {
+    #heading {
+        font-size: 50px; /* Further reduce font size for smaller phone screens */
+        text-shadow: 0 0 20px rgba(2, 110, 143, 0.457); /* Adjust text shadow for smaller screens */
+    }
+
+    @keyframes anime {
+        100% {
+            text-shadow: 0 0 20px rgba(45, 2, 65, 0.457); /* Adjust text shadow for smaller screens */
+        }
+    }
+}
