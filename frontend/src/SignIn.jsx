@@ -7,7 +7,7 @@ function SignIn() {
     function signIn(e) {
         e.preventDefault();
         if(email.length>0 && password.length>0){
-            axios.post('/api/login',{email,password})
+            axios.post('https://todolist-backend-w1l0.onrender.com/api/login',{email,password})
             .then((res)=>{
                 console.log(res.data)
                 if(res.data.success){
