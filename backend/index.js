@@ -7,6 +7,10 @@ import cookieParser from 'cookie-parser';
 import { v4 as uuidv4 } from 'uuid';
 import cors from 'cors'
 const app=express()
+app.use(cors({
+  origin: 'https://todolist-frontend-onb6.onrender.com/', // Update with your frontend domain
+  credentials: true,
+}));
 app.use(express.json());
 app.use(cookieParser());
 app.post('/register', async (req, res) => {
